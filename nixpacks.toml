@@ -1,8 +1,4 @@
 # Railway deployment configuration for Node.js + Python backend
-[providers]
-nodejs = "18"
-python = "3.11"
-
 [phases.setup]
 nixPkgs = ["nodejs", "python311", "python311Packages.pip"]
 
