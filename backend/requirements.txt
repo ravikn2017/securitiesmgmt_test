@@ -1,0 +1,7 @@
+# Python dependencies for Securities Management Backend
+# Updated versions compatible with Python 3.13
+numpy>=1.26.0
+pandas>=2.1.0
+yfinance>=0.2.28
+openpyxl>=3.1.2
+requests>=2.31.0
