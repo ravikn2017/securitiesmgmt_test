@@ -1,12 +1,26 @@
 # Railway deployment configuration for Node.js + Python backend
 [phases.setup]
-nixPkgs = ["nodejs", "python311", "python311Packages.pip", "python311Packages.setuptools", "python311Packages.wheel"]
+nixPkgs = [
+  "nodejs",
+  "python311",
+  "python311Packages.numpy",
+  "python311Packages.pandas", 
+  "python311Packages.requests",
+  "python311Packages.openpyxl",
+  "python311Packages.yfinance",
+  "python311Packages.beautifulsoup4",
+  "python311Packages.lxml",
+  "python311Packages.html5lib",
+  "python311Packages.multitasking",
+  "python311Packages.frozendict",
+  "python311Packages.urllib3",
+  "python311Packages.certifi",
+  "python311Packages.charset-normalizer",
+  "python311Packages.idna"
+]
 
 [phases.install]
 cmds = [
-  "python3 -c 'import ensurepip; ensurepip.bootstrap()' || curl -sS https://bootstrap.pypa.io/get-pip.py | python3",
-  "python3 -m pip install --upgrade pip setuptools wheel",
-  "cd backend && python3 -m pip install -r requirements.txt",
   "cd backend && npm install"
 ]
 
