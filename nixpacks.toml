@@ -1,33 +1,20 @@
+# Railway deployment configuration for Node.js + Python backend
+[providers]
+nodejs = "18"
+python = "3.11"
+
 [phases.setup]
-nixPkgs = [
-  "nodejs", 
-  "python3", 
-  "python3Packages.pip",
-  "python3Packages.setuptools",
-  "python3Packages.wheel", 
-  "gcc",
-  "glibc",
-  "stdenv.cc.cc.lib",
-  "zlib",
-  "blas",
-  "lapack",
-  "gfortran",
-  "pkg-config"
-]
+nixPkgs = ["nodejs", "python311", "python311Packages.pip"]
 
 [phases.install]
 cmds = [
-  "cd backend && npm install",
-  "export LD_LIBRARY_PATH=/nix/store/*-gcc-*/lib:/nix/store/*-glibc-*/lib:$LD_LIBRARY_PATH",
-  "export BLAS=/nix/store/*-blas*/lib/libblas.so",
-  "export LAPACK=/nix/store/*-lapack*/lib/liblapack.so", 
-  "pip3 install --break-system-packages --upgrade pip setuptools wheel",
-  "pip3 install --break-system-packages -r requirements.txt",
-  "ln -sf $(which python3) /usr/local/bin/python || true"
+  "python3 -m pip install --upgrade pip setuptools wheel",
+  "cd backend && python3 -m pip install -r requirements.txt",
+  "cd backend && npm install"
 ]
 
 [phases.build]
 cmds = ["cd backend"]
 
 [start]
-cmd = "cd backend && export PATH=/usr/local/bin:$PATH && export PYTHONDONTWRITEBYTECODE=1 && export PYTHONUNBUFFERED=1 && npm run start:prod"
+cmd = "cd backend && npm run start:prod"
