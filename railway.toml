@@ -1,6 +1,5 @@
 # Railway configuration for Node.js + Python backend
 [build]
-builder = "nixpacks"
 buildCommand = "cd backend && npm install && python -m pip install -r requirements.txt"
 
 [deploy]
