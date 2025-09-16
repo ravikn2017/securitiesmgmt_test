@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json()); // Middleware to parse JSON bodies
 
 app.use((req, res, next) => {
-  console.log("Hello from the middleware :) ! ");
+  console.log(`🔍 REQUEST: ${req.method} ${req.url} from ${req.ip}`);
   next(); // Call the next middleware in the stack
 });
 

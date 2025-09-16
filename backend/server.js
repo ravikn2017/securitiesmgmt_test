@@ -21,6 +21,7 @@ const port = process.env.PORT || 3002;
 const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
 
 app.listen(port, host, () => {
-  console.log(`App is running on ${host}:${port}...`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`🚀 App is running on ${host}:${port}...`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`✅ Server ready to accept connections`);
 });
