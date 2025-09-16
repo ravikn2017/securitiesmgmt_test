@@ -5,6 +5,8 @@ import sys
 import requests
 from datetime import datetime
 
+# Let yfinance handle its own session (it uses curl_cffi internally)
+
 def serialize_value(v, key=None):
     if isinstance(v, pd.Timestamp):
         return v.strftime('%Y-%m-%d')
@@ -194,7 +196,9 @@ def convert_financial_data(data, exchange_rate):
 
 def get_company_latestPrice(symbol):
     try:
+        # Let yfinance handle its own session management
         company = yf.Ticker(symbol)
+        
         price_info = {
             'currentPrice': company.info.get('currentPrice'),
             'dayHigh': company.info.get('dayHigh'),
