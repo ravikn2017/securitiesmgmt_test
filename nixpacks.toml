@@ -2,14 +2,16 @@
 [phases.setup]
 nixPkgs = [
   "nodejs",
-  "(python311.withPackages (ps: with ps; [ numpy pandas requests openpyxl yfinance beautifulsoup4 lxml html5lib multitasking frozendict urllib3 certifi charset-normalizer idna ]))"
+  "(python311.withPackages (ps: with ps; [ numpy pandas requests openpyxl yfinance beautifulsoup4 lxml html5lib multitasking frozendict urllib3 certifi charset-normalizer idna curl-cffi ]))"
 ]
 
 [phases.install]
 cmds = [
   "cd backend && npm install",
   "python3 -c 'import sys; print(f\"Python path: {sys.path}\")' || echo 'Python check failed'",
-  "python3 -c 'import yfinance; print(\"yfinance available\")' || echo 'yfinance not found'"
+  "python3 -c 'import curl_cffi; print(\"curl_cffi available\")' || echo 'curl_cffi not found'",
+  "python3 -c 'import yfinance; print(\"yfinance available\")' || echo 'yfinance not found'",
+  "python3 -c 'import yfinance as yf; ticker = yf.Ticker(\"AAPL\"); print(\"yfinance functional test passed\")' || echo 'yfinance functional test failed'"
 ]
 
 [phases.build]
