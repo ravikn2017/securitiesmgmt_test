@@ -2,7 +2,7 @@
 [phases.setup]
 nixPkgs = [
   "nodejs",
-  "(python311.withPackages (ps: with ps; [ numpy pandas requests openpyxl yfinance beautifulsoup4 lxml html5lib multitasking frozendict urllib3 certifi charset-normalizer idna curl-cffi ]))"
+  "(python310.withPackages (ps: with ps; [ numpy pandas requests openpyxl yfinance beautifulsoup4 lxml html5lib multitasking frozendict urllib3 certifi charset-normalizer idna curl-cffi ]))"
 ]
 
 [phases.install]
