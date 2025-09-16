@@ -66,6 +66,11 @@ app.use((req, res, next) => {
 
 // 2) ROUTES
 
+// Simple health check for Railway
+app.get("/", (req, res) => {
+  res.json({ status: "API running", timestamp: new Date().toISOString() });
+});
+
 app.use("/api/v1/companyCurrentFinancials", companyCurrentFinancialsRouter);
 
 module.exports = app;
