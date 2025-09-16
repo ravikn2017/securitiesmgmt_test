@@ -5,7 +5,8 @@ import sys
 import requests
 from datetime import datetime
 
-# Let yfinance handle its own session (it uses curl_cffi internally)
+# Set a browser User-Agent to avoid bot detection  
+yf.utils.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 
 def serialize_value(v, key=None):
     if isinstance(v, pd.Timestamp):
@@ -196,21 +197,8 @@ def convert_financial_data(data, exchange_rate):
 
 def get_company_latestPrice(symbol):
     try:
-        import os
-        
-        # Runtime environment debugging - compare to build environment
-        print(f"=== RUNTIME ENVIRONMENT TEST ===", file=sys.stderr)
-        print(f"PWD: {os.getcwd()}", file=sys.stderr)  
-        print(f"NODE_ENV: {os.environ.get('NODE_ENV', 'not set')}", file=sys.stderr)
-        print(f"PYTHONPATH: {os.environ.get('PYTHONPATH', 'not set')}", file=sys.stderr)
-        print(f"PATH: {os.environ.get('PATH', 'not set')[:200]}...", file=sys.stderr)
-        
         company = yf.Ticker(symbol)
-        print(f"Ticker created for {symbol}", file=sys.stderr)
-        
-        # This is where it fails - let's see exactly what happens
         info = company.info
-        print(f"Info retrieved: {type(info)}, keys: {len(info) if info else 0}", file=sys.stderr)
         
         price_info = {
             'currentPrice': info.get('currentPrice'),
@@ -222,7 +210,6 @@ def get_company_latestPrice(symbol):
         }
         return json.dumps(price_info)
     except Exception as e:
-        print(f"Exception details: {type(e).__name__}: {str(e)}", file=sys.stderr)
         return json.dumps({"error": str(e)})
 
 def get_company_financials(symbol):
