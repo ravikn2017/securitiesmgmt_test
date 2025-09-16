@@ -21,7 +21,9 @@ nixPkgs = [
 
 [phases.install]
 cmds = [
-  "cd backend && npm install"
+  "cd backend && npm install",
+  "python3 -c 'import sys; print(f\"Python path: {sys.path}\")' || echo 'Python check failed'",
+  "python3 -c 'import yfinance; print(\"yfinance available\")' || echo 'yfinance not found'"
 ]
 
 [phases.build]
