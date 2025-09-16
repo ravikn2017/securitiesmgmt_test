@@ -17,11 +17,14 @@ console.log(app.get("env")); // This will log the current environment
 
 const port = process.env.PORT || 3002;
 
-// Use 0.0.0.0 for Railway (production), localhost for development
-const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
-
-app.listen(port, host, () => {
-  console.log(`🚀 App is running on ${host}:${port}...`);
+// Railway needs 0.0.0.0 binding for load balancer
+const server = app.listen(port, "0.0.0.0", () => {
+  console.log(`🚀 Railway App running on 0.0.0.0:${port}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`✅ Server ready to accept connections`);
+  console.log(`✅ Server ready - Railway should route traffic now`);
+});
+
+// Add error handling
+server.on("error", (err) => {
+  console.error("❌ Server error:", err);
 });
