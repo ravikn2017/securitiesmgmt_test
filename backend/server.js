@@ -1,35 +1,21 @@
 // 4) START SERVER
 const dotenv = require("dotenv");
 
-dotenv.config({ path: "./config.env" });
+// Only load config.env in development
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: "./config.env" });
+}
 
 const app = require("./app");
 
-console.log(app.get("env")); // This will log the current environment, e.g., 'development'
-//console.log(process.env);
+console.log(app.get("env")); // This will log the current environment
 
-//const mongoose = require("mongoose");
+const port = process.env.PORT || 3002;
 
-// Use local database for development, Atlas for production
-// const DB =
-//   process.env.NODE_ENV === "development"
-//     ? process.env.DATABASE_LOCAL
-//     : process.env.DATABASE;
+// Use 0.0.0.0 for Railway (production), localhost for development
+const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
 
-// mongoose
-//   .connect(DB, {
-//     //useNewUrlParser: true,
-//     // useCreateIndex: true,
-//     // useFindAndModify: false,
-//   })
-//   //.then((con) => {
-//   .then(() => {
-//     //console.log(con.connections);
-//     console.log("DB Connection Succesful !!");
-//   });
-
-//const port = 3002;
-const port = process.env.PORT || 3002; // Use the PORT from environment variables or default to 3001
-app.listen(port, () => {
-  console.log(`App is running on port ${port}...`);
+app.listen(port, host, () => {
+  console.log(`App is running on ${host}:${port}...`);
+  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
 });
