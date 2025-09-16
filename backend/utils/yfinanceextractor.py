@@ -196,73 +196,33 @@ def convert_financial_data(data, exchange_rate):
 
 def get_company_latestPrice(symbol):
     try:
-        import time
         import os
         
-        # Runtime environment debugging
-        print(f"🔍 Runtime check - Symbol: {symbol}", file=sys.stderr)
-        print(f"🔍 NODE_ENV: {os.getenv('NODE_ENV')}", file=sys.stderr)
+        # Runtime environment debugging - compare to build environment
+        print(f"=== RUNTIME ENVIRONMENT TEST ===", file=sys.stderr)
+        print(f"PWD: {os.getcwd()}", file=sys.stderr)  
+        print(f"NODE_ENV: {os.environ.get('NODE_ENV', 'not set')}", file=sys.stderr)
+        print(f"PYTHONPATH: {os.environ.get('PYTHONPATH', 'not set')}", file=sys.stderr)
+        print(f"PATH: {os.environ.get('PATH', 'not set')[:200]}...", file=sys.stderr)
         
-        # Test curl_cffi availability at runtime
-        try:
-            import curl_cffi
-            print("✅ curl_cffi available at runtime", file=sys.stderr)
-        except ImportError as e:
-            print(f"❌ curl_cffi NOT available at runtime: {e}", file=sys.stderr)
-        
-        # Add small delay on Railway to avoid rate limits
-        if os.getenv('NODE_ENV') == 'production':
-            time.sleep(1)  # 1 second delay on Railway only
-        
-        # Let yfinance handle its own session management
-        print(f"🐍 Creating yfinance ticker for {symbol}", file=sys.stderr)
         company = yf.Ticker(symbol)
+        print(f"Ticker created for {symbol}", file=sys.stderr)
         
-        # Try to get data, fallback to history if info fails
-        try:
-            print("📊 Trying company.info...", file=sys.stderr)
-            info = company.info
-            print(f"📊 Info keys: {list(info.keys())[:10]}...", file=sys.stderr)
-            
-            price_info = {
-                'currentPrice': info.get('currentPrice'),
-                'dayHigh': info.get('dayHigh'),
-                'dayLow': info.get('dayLow'),
-                'fiftyTwoWeekHigh': info.get('fiftyTwoWeekHigh'),
-                'fiftyTwoWeekLow': info.get('fiftyTwoWeekLow'),
-                'previousClose': info.get('previousClose')
-            }
-            print(f"📊 Price info: {price_info}", file=sys.stderr)
-            
-        except Exception as info_error:
-            # Fallback to historical data if info fails
-            print(f"❌ Info failed: {info_error}", file=sys.stderr)
-            print("📈 Trying history fallback...", file=sys.stderr)
-            
-            try:
-                hist = company.history(period="2d", interval="1d")
-                print(f"📈 History shape: {hist.shape if not hist.empty else 'empty'}", file=sys.stderr)
-                
-                if not hist.empty:
-                    latest = hist.iloc[-1]
-                    price_info = {
-                        'currentPrice': float(latest['Close']),
-                        'dayHigh': float(latest['High']),
-                        'dayLow': float(latest['Low']),
-                        'fiftyTwoWeekHigh': None,
-                        'fiftyTwoWeekLow': None,
-                        'previousClose': float(hist.iloc[-2]['Close']) if len(hist) > 1 else float(latest['Close'])
-                    }
-                    print(f"📈 History price info: {price_info}", file=sys.stderr)
-                else:
-                    raise ValueError("No historical data available")
-            except Exception as hist_error:
-                print(f"❌ History also failed: {hist_error}", file=sys.stderr)
-                raise ValueError(f"Both info and history failed: {info_error}, {hist_error}")
+        # This is where it fails - let's see exactly what happens
+        info = company.info
+        print(f"Info retrieved: {type(info)}, keys: {len(info) if info else 0}", file=sys.stderr)
         
+        price_info = {
+            'currentPrice': info.get('currentPrice'),
+            'dayHigh': info.get('dayHigh'),
+            'dayLow': info.get('dayLow'),
+            'fiftyTwoWeekHigh': info.get('fiftyTwoWeekHigh'),
+            'fiftyTwoWeekLow': info.get('fiftyTwoWeekLow'),
+            'previousClose': info.get('previousClose')
+        }
         return json.dumps(price_info)
     except Exception as e:
-        print(f"❌ Final error: {e}", file=sys.stderr)
+        print(f"Exception details: {type(e).__name__}: {str(e)}", file=sys.stderr)
         return json.dumps({"error": str(e)})
 
 def get_company_financials(symbol):

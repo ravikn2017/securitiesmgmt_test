@@ -11,7 +11,9 @@ cmds = [
   "python3 -c 'import sys; print(f\"Python path: {sys.path}\")' || echo 'Python check failed'",
   "python3 -c 'import curl_cffi; print(\"curl_cffi available\")' || echo 'curl_cffi not found'",
   "python3 -c 'import yfinance; print(\"yfinance available\")' || echo 'yfinance not found'",
-  "python3 -c 'import yfinance as yf; ticker = yf.Ticker(\"AAPL\"); print(\"yfinance functional test passed\")' || echo 'yfinance functional test failed'"
+  # python3 -c 'import yfinance as yf; ticker = yf.Ticker("AAPL"); print("yfinance functional test passed")' || echo 'yfinance functional test failed'
+  "echo '=== BUILD ENVIRONMENT TEST ==='",
+  "python3 -c 'import yfinance as yf; import os; print(f\"PWD: {os.getcwd()}\"); print(f\"ENV: {os.environ.get(\"NODE_ENV\", \"not set\")}\"); ticker = yf.Ticker(\"AAPL\"); info = ticker.info; print(f\"BUILD SUCCESS: {info.get(\"symbol\", \"NO_SYMBOL\")}, current_price: {info.get(\"currentPrice\", \"NO_PRICE\")}\")' || echo 'BUILD yfinance failed'"
 ]
 
 [phases.build]
