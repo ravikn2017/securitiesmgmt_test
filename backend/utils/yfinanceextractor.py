@@ -196,17 +196,43 @@ def convert_financial_data(data, exchange_rate):
 
 def get_company_latestPrice(symbol):
     try:
+        import time
+        import os
+        # Add small delay on Railway to avoid rate limits
+        if os.getenv('NODE_ENV') == 'production':
+            time.sleep(1)  # 1 second delay on Railway only
+        
         # Let yfinance handle its own session management
         company = yf.Ticker(symbol)
         
-        price_info = {
-            'currentPrice': company.info.get('currentPrice'),
-            'dayHigh': company.info.get('dayHigh'),
-            'dayLow': company.info.get('dayLow'),
-            'fiftyTwoWeekHigh': company.info.get('fiftyTwoWeekHigh'),
-            'fiftyTwoWeekLow': company.info.get('fiftyTwoWeekLow'),
-            'previousClose': company.info.get('previousClose')
-        }
+        # Try to get data, fallback to history if info fails
+        try:
+            info = company.info
+            price_info = {
+                'currentPrice': info.get('currentPrice'),
+                'dayHigh': info.get('dayHigh'),
+                'dayLow': info.get('dayLow'),
+                'fiftyTwoWeekHigh': info.get('fiftyTwoWeekHigh'),
+                'fiftyTwoWeekLow': info.get('fiftyTwoWeekLow'),
+                'previousClose': info.get('previousClose')
+            }
+        except:
+            # Fallback to historical data if info fails
+            print("Info failed, trying history...", file=sys.stderr)
+            hist = company.history(period="2d", interval="1d")
+            if not hist.empty:
+                latest = hist.iloc[-1]
+                price_info = {
+                    'currentPrice': float(latest['Close']),
+                    'dayHigh': float(latest['High']),
+                    'dayLow': float(latest['Low']),
+                    'fiftyTwoWeekHigh': None,
+                    'fiftyTwoWeekLow': None,
+                    'previousClose': float(hist.iloc[-2]['Close']) if len(hist) > 1 else float(latest['Close'])
+                }
+            else:
+                raise ValueError("No data available")
+        
         return json.dumps(price_info)
     except Exception as e:
         return json.dumps({"error": str(e)})
