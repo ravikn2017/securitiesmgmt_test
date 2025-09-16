@@ -3,10 +3,60 @@ import pandas as pd
 import json
 import sys
 import requests
+import os
 from datetime import datetime
 
-# Set a browser User-Agent to avoid bot detection  
-yf.utils.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+# Railway-specific configuration to bypass Edge infrastructure
+if os.environ.get('RAILWAY_ENVIRONMENT_NAME'):
+    # Configure requests session to bypass Railway's edge proxies
+    import requests.adapters
+    from requests.packages.urllib3.util.retry import Retry
+    
+    # Create custom session with specific configuration for Railway
+    session = requests.Session()
+    
+    # Set headers to bypass Railway Edge detection
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+    })
+    
+    # Disable any proxy settings that might route through Railway Edge
+    session.proxies = {}
+    session.trust_env = False
+    
+    # Configure yfinance to use our custom session
+    yf.utils.user_agent = session.headers['User-Agent']
+    
+    # Monkey patch yfinance session to use our custom one
+    original_requests_get = requests.get
+    original_requests_post = requests.post
+    
+    def patched_get(*args, **kwargs):
+        kwargs.setdefault('headers', {}).update(session.headers)
+        kwargs['proxies'] = {}
+        kwargs['timeout'] = 30
+        return original_requests_get(*args, **kwargs)
+    
+    def patched_post(*args, **kwargs):
+        kwargs.setdefault('headers', {}).update(session.headers)
+        kwargs['proxies'] = {}
+        kwargs['timeout'] = 30
+        return original_requests_post(*args, **kwargs)
+    
+    # Apply patches only on Railway
+    requests.get = patched_get
+    requests.post = patched_post
+    
+    print("Railway Edge bypass configured", file=sys.stderr)
+else:
+    # Non-Railway environments: simple User-Agent
+    yf.utils.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 
 def serialize_value(v, key=None):
     if isinstance(v, pd.Timestamp):
