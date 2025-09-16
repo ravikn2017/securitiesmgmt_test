@@ -20,6 +20,7 @@ async function getLatestPriceFromYFinance(symbol) {
     });
 
     pythonProcess.on("error", (err) => {
+      console.error("Python process error:", err);
       if (err.code === "ENOENT") {
         reject(
           new Error(
@@ -32,6 +33,10 @@ async function getLatestPriceFromYFinance(symbol) {
     });
 
     pythonProcess.on("close", (code) => {
+      console.log(`Python process exited with code: ${code}`);
+      if (error) console.error("Python stderr:", error);
+      if (data) console.log("Python stdout:", data);
+
       if (code !== 0) {
         reject(new Error(`Python process exited with code ${code}: ${error}`));
         return;

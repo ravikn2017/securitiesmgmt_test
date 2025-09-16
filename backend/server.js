@@ -1,9 +1,14 @@
 // 4) START SERVER
 const dotenv = require("dotenv");
 
-// Only load config.env in development
-if (process.env.NODE_ENV !== "production") {
+// Only load config.env for local development
+// Railway provides environment variables directly, doesn't need config.env
+if (!process.env.PORT || process.env.PORT === "5001") {
+  // Local development - load config.env
   dotenv.config({ path: "./config.env" });
+} else {
+  // Railway/Production - don't load config.env
+  console.log("Using Railway environment variables (not loading config.env)");
 }
 
 const app = require("./app");
