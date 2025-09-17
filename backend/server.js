@@ -9,6 +9,13 @@ if (!process.env.PORT || process.env.PORT === "5001") {
 } else {
   // Railway/Production - don't load config.env
   console.log("Using Railway environment variables (not loading config.env)");
+
+  // Railway-specific: Disable proxy environment variables that might route through Edge
+  delete process.env.HTTP_PROXY;
+  delete process.env.HTTPS_PROXY;
+  delete process.env.http_proxy;
+  delete process.env.https_proxy;
+  console.log("Railway: Disabled proxy environment variables to bypass Edge");
 }
 
 const app = require("./app");
