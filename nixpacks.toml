@@ -11,8 +11,10 @@ cmds = [
   "python3 -c 'import sys; print(f\"Python path: {sys.path}\")' || echo 'Python check failed'",
   "python3 -c 'import curl_cffi; print(\"curl_cffi available\")' || echo 'curl_cffi not found'",
   "python3 -c 'import yfinance; print(\"yfinance available\")' || echo 'yfinance not found'",
+  "python3 -c 'import yfinance; print(f\"yfinance version (before upgrade): {yfinance.__version__}\")' || echo 'yfinance version check failed'",
+  "pip install --upgrade yfinance --break-system-packages",
+  "python3 -c 'import yfinance; print(f\"yfinance version (after upgrade): {yfinance.__version__}\")' || echo 'yfinance upgrade check failed'",
   "python3 -c 'import sys; print(f\"Python version: {sys.version}\")' || echo 'Python version check failed'",
-  "python3 -c 'import yfinance; print(f\"yfinance version: {yfinance.__version__}\")' || echo 'yfinance version check failed'",
   "python3 -c 'import requests; print(f\"requests version: {requests.__version__}\")' || echo 'requests version check failed'",
   "python3 -c 'import yfinance as yf; ticker = yf.Ticker(\"AAPL\"); print(\"yfinance functional test passed\")' || echo 'yfinance functional test failed'"
 ]

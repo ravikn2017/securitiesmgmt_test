@@ -5,8 +5,9 @@ import sys
 import requests
 from datetime import datetime
 
-# Set a browser User-Agent to avoid bot detection  
-yf.utils.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+# Set User-Agent that bypasses Yahoo Finance bot detection (from GitHub issue #2297)
+# This specific older IE User-Agent has been reported to work consistently
+yf.utils.user_agent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)'
 
 def serialize_value(v, key=None):
     if isinstance(v, pd.Timestamp):
