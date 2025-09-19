@@ -2,33 +2,28 @@
 const dotenv = require("dotenv");
 
 // Only load config.env for local development
-// Railway provides environment variables directly, doesn't need config.env
+// Cloud platforms provide environment variables directly, doesn't need config.env
 if (!process.env.PORT || process.env.PORT === "5001") {
   // Local development - load config.env
   dotenv.config({ path: "./config.env" });
 } else {
-  // Railway/Production - don't load config.env
-  console.log("Using Railway environment variables (not loading config.env)");
-
-  // Railway-specific: Disable proxy environment variables that might route through Edge
-  delete process.env.HTTP_PROXY;
-  delete process.env.HTTPS_PROXY;
-  delete process.env.http_proxy;
-  delete process.env.https_proxy;
-  console.log("Railway: Disabled proxy environment variables to bypass Edge");
+  // Production - don't load config.env
+  console.log(
+    "Using production environment variables (not loading config.env)"
+  );
 }
 
 const app = require("./app");
 
 console.log(app.get("env")); // This will log the current environment
 
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 5003;
 
-// Railway needs 0.0.0.0 binding for load balancer
+// Cloud platforms need 0.0.0.0 binding for load balancer
 const server = app.listen(port, "0.0.0.0", () => {
-  console.log(`🚀 Railway App running on 0.0.0.0:${port}`);
+  console.log(`🚀 App running on 0.0.0.0:${port}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`✅ Server ready - Railway should route traffic now`);
+  console.log(`✅ Server ready for requests`);
 });
 
 // Add error handling
